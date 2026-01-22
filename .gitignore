@@ -1,0 +1,47 @@
+# =========================
+# Build artifacts
+# =========================
+build/
+bin/
+out/
+*.o
+*.obj
+*.a
+*.so
+*.dylib
+*.exe
+
+# =========================
+# CMake
+# =========================
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+compile_commands.json
+CTestTestfile.cmake
+*.cmake
+
+# =========================
+# VS Code
+# =========================
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/c_cpp_properties.json
+
+# =========================
+# macOS
+# =========================
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# =========================
+# Debug / temp files
+# =========================
+*.log
+*.tmp
+*.swp
+*.swo
+*~

@@ -23,11 +23,20 @@ bool is_direct_child_path_of(std::filesystem::path const &possible_child_path,
   return parent_cpath == known_canonical_path;
 }
 
-std::generator<std::filesystem::path>
-bfs_scan(std::filesystem::path root_path)
+std::generator<std::filesystem::path> bfs_scan(std::filesystem::path root_path)
 {
 
   std::queue<std::filesystem::path> q;
+
+  q.push(root_path);
+
+  while (q.empty()) // if queue is not empty continue 
+  {
+
+    std::filesystem::path current_dir = q.front();
+    q.pop();
+  }
+  
 }
 
 int main(int argc, char *argv[])

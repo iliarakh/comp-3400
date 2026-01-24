@@ -25,6 +25,8 @@ bool is_direct_child_path_of(const fs::path &possible_child_path,
 
 std::generator<fs::path> bfs_scan(fs::path root_path)
 {
+  // Edge case: If the root isn't a directory, just return the file itself.
+  // We use symlink_status to avoid following links that point to directories.
   if (fs::symlink_status(root_path).type() != fs::file_type::directory)
   {
     co_yield root_path;
@@ -39,19 +41,22 @@ std::generator<fs::path> bfs_scan(fs::path root_path)
     fs::path current_dir = q.front();
     q.pop();
 
+    // Iterate over the current directory non-recursively
     for (fs::directory_entry const &entry : fs::directory_iterator(current_dir))
     {
       fs::path p = entry.path();
 
+      // Handle Symlinks: We yield them but do NOT traverse into them
+      // to avoid potential loops or exiting the directory tree.
       if (entry.is_symlink())
       {
-        if (is_direct_child_path_of(p, current_dir))
-          co_yield p;
+        co_yield p;
         continue;
       }
 
-      fs::file_type t = entry.status().type();
-      if (t == fs::file_type::directory)
+      // BFS Logic: If directory, add to queue for later scanning. Otherwise, yield file.
+      // Note: We check entry.status() which follows symlinks, but we already handled symlinks above.
+      if (entry.status().type() == fs::file_type::directory)
         q.push(p);
       else
         co_yield p;

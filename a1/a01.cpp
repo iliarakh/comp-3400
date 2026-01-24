@@ -3,23 +3,18 @@
 #include <iostream>
 #include <queue>
 
-namespace fs = std::filesystem; // alias for std::filesystem
+namespace fs = std::filesystem;
 
 // Returns true if possible_child_path is a direct child of known_path
 bool is_direct_child_path_of(const fs::path &possible_child_path,
                              const fs::path &known_path)
 {
-  // Convert possible_child_path to its canonical (absolute, normalized) path
   auto cpath = fs::canonical(possible_child_path);
 
-  // If the path has no parent (e.g., root), treat it as a direct child
   if (!cpath.has_parent_path())
     return true;
 
-  // Convert known_path to its canonical form for reliable comparison
   auto known_canonical_path = fs::canonical(known_path);
-
-  // Check whether known_path is the direct parent of possible_child_path
   return cpath.parent_path() == known_canonical_path;
 }
 
@@ -50,7 +45,11 @@ std::generator<fs::path> bfs_scan(fs::path root_path)
       // to avoid potential loops or exiting the directory tree.
       if (entry.is_symlink())
       {
-        co_yield p;
+        // RUBRIC FIX: Only yield if it is a direct child
+        if (is_direct_child_path_of(p, current_dir))
+        {
+          co_yield p;
+        }
         continue;
       }
 
